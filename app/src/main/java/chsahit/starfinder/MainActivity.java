@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.location.Location;
 import android.location.LocationManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.StrictMode;
 import android.support.v7.app.ActionBarActivity;
@@ -11,6 +12,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.webkit.WebView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -45,6 +47,9 @@ public class MainActivity extends ActionBarActivity
         setContentView(R.layout.activity_main);
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
+        //WebView web = (WebView) findViewById(R.id.webView);
+        //String htmlCode = "<html style=\"background-color=#ff055564\"> <a href=\"https://twitter.com/intent/tweet?url=&original_referer=\"><img src=\"http://pre04.deviantart.net/416a/th/pre/i/2012/159/a/3/larry_the_twitter_bird_by_draganja-d52q3en.png\" style=\"height=30 width=30\"/></a></html>";
+        //web.loadData(htmlCode,"text/html",null);
         client = new GoogleApiClient.Builder(this).
                 addConnectionCallbacks(this).
                 addOnConnectionFailedListener(this).addApi(LocationServices.API).build();
@@ -168,7 +173,8 @@ public class MainActivity extends ActionBarActivity
     public void onConnectionFailed(ConnectionResult connectionResult) {
 
     }
-
+    //BEGIN ON CLICK METHOD
+    //transitions from home screen to map screen
     public void changeScreens(View v) {
         Intent intent = new Intent(this,MapsActivity.class);
         intent.putExtra("long",longitude);
@@ -177,15 +183,20 @@ public class MainActivity extends ActionBarActivity
         intent.putExtra("bolideLat",bolideLat);
         startActivity(intent);
     }
-
+    //makes GPS coordinates visible
     public void showGPS(View v) {
         TextView yourloc = (TextView) findViewById(R.id.textView);
         TextView bolideLoc = (TextView) findViewById(R.id.textView2);
         Button mapButton = (Button) findViewById(R.id.button2);
-        yourloc.setText("Your Location: ("+longitude+","+latitude+")");
-        bolideLoc.setText("The Shooting Star's Location: ("+bolideLong+","+bolideLat+")");
+        yourloc.setText("Your Location: (" + longitude + "," + latitude + ")");
+        bolideLoc.setText("The Shooting Star's Location: (" + bolideLong + "," + bolideLat + ")");
         yourloc.setVisibility(View.VISIBLE);
         bolideLoc.setVisibility(View.VISIBLE);
         mapButton.setVisibility(View.VISIBLE);
+    }
+    //allows user to share via Twitter
+    public void openTwitter(View v) {
+        Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://twitter.com/intent/tweet?url=&original_referer="));
+        startActivity(browserIntent);
     }
 }
