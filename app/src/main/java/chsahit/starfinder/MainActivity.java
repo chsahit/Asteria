@@ -1,6 +1,7 @@
 package chsahit.starfinder;
 
 import android.content.Context;
+import android.content.Intent;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
@@ -9,6 +10,7 @@ import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -16,8 +18,8 @@ import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 
+import org.json.JSONArray;
 import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
@@ -30,6 +32,8 @@ public class MainActivity extends ActionBarActivity
         implements LocationListener,GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
     double longitude = 0.0;
     double latitude = 0.0;
+    double bolideLong = 0.0;
+    double bolideLat = 0.0;
     GoogleApiClient client;
     LocationRequest request;
     @Override
@@ -94,13 +98,13 @@ public class MainActivity extends ActionBarActivity
      * @throws JSONException if somthing goes wrong parsing. To quote the ever so specific docs "
      *      thrown "when things are amiss"
      */
-    public JSONObject getNearestShootingStar(double longitude, double lat) throws JSONException {
+    public void getNearestShootingStar(double longitude, double lat) throws JSONException {
         //api endpoint we are posting to w/params preformatted
         String address = "https://communities.socrata.com/resource/27eq-bd6d.json" +
                 "?$order=distance_in_meters(%22POINT%20(" + longitude + "%20" + lat + ")%22,%20geolocation) ASC" +
                 "&$limit=10&&$$app_token=4SmTmWiVWkhE7W839XKUeHurc";
-        address = "https://communities.socrata.com/resource/27eq-bd6d.json?$order=distance_in_meters(%22POINT%20(" + longitude + "%20" + lat + ")%22,%20geolocation)%20ASC&$limit=10&&$$app_token=4SmTmWiVWkhE7W839XKUeHurc";
-        //address = "https://google.com";
+        address = "https://communities.socrata.com/resource/27eq-bd6d.json?$order=distance_in_meters(%22POINT%20(" + longitude + "%20" + lat + ")%22,%20geolocation)%20ASC&$limit=1&&$$app_token=4SmTmWiVWkhE7W839XKUeHurc";
+        //address = "https://google.com";01
         //String address = "https://google.com";
         String response = ""; //response contains the json
         //Log.w("starfinder", address);
@@ -123,12 +127,17 @@ public class MainActivity extends ActionBarActivity
             }
             rd.close();
             is.close();
+//            String coords = new JSONObjectAr(response).getString("geolocation");
+//            Log.w("starfinder", coords + " are coords");
+//            Log.w("sf", "method end");
+            bolideLong = Double.parseDouble(new JSONArray(response).getJSONObject(0).getJSONObject("geolocation").getJSONArray("coordinates").get(0).toString());
+            bolideLat = Double.parseDouble(new JSONArray(response).getJSONObject(0).getJSONObject("geolocation").getJSONArray("coordinates").get(1).toString());
+            Log.w("sf",bolideLong+"");
             Log.w("starfinder", response + " is response");
         } catch (Exception e) {
             //cry
             Log.w("starfinder",e.getMessage() + " was an error");
         }
-        return new JSONObject(response); //return JSON
     }
 
     @Override
@@ -155,5 +164,14 @@ public class MainActivity extends ActionBarActivity
     @Override
     public void onConnectionFailed(ConnectionResult connectionResult) {
 
+    }
+
+    public void changeScreens(View v) {
+        Intent intent = new Intent(this,MapsActivity.class);
+        intent.putExtra("long",longitude);
+        intent.putExtra("lat",latitude);
+        intent.putExtra("bolideLong",bolideLong);
+        intent.putExtra("bolideLat",bolideLat);
+        startActivity(intent);
     }
 }
