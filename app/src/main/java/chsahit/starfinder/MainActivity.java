@@ -11,6 +11,9 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.TextView;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -173,5 +176,16 @@ public class MainActivity extends ActionBarActivity
         intent.putExtra("bolideLong",bolideLong);
         intent.putExtra("bolideLat",bolideLat);
         startActivity(intent);
+    }
+
+    public void showGPS(View v) {
+        TextView yourloc = (TextView) findViewById(R.id.textView);
+        TextView bolideLoc = (TextView) findViewById(R.id.textView2);
+        Button mapButton = (Button) findViewById(R.id.button2);
+        yourloc.setText("Your Location: ("+longitude+","+latitude+")");
+        bolideLoc.setText("The Shooting Star's Location: ("+bolideLong+","+bolideLat+")");
+        yourloc.setVisibility(View.VISIBLE);
+        bolideLoc.setVisibility(View.VISIBLE);
+        mapButton.setVisibility(View.VISIBLE);
     }
 }
